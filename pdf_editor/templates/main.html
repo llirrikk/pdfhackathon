@@ -3,14 +3,22 @@
 <head>
     <meta charset="UTF-8">
     <title>Title</title>
+    <link rel="stylesheet" type="text/css" href='../static/css/main.css'>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,200;0,300;0,400;0,600;1,300&display=swap" rel="stylesheet">
 </head>
 <body>
-    <ul>
-        <li><a href="/convert_to_zip">convert</a></li>
-        <li><a href="/delete">delete</a></li>
-        <li><a href="/merge">merge</a></li>
-        <li><a href="/rotate">rotate</a></li>
-        <li><a href="/split">split</a></li>
+    <div>
+        <h1 class = title>PDF Конвертер</h1>
+    </div>
+    <ul class = functions>
+        <li class = convert><a href="/convert_to_zip"><div class = square>Конвертировать в ZIP</div></a></li>
+        <li class = delete><a href="/delete"><div class = square>Удалить</div></a></li>
+        <li class = merge><a href="/merge"><div class = square>Объединить</div></a></li>
+        <li class = rotate><a href="/rotate"><div class = square>Повернуть</div></a></li>
+        <li class = split><a href="/split"><div class = square>Разделить</div></a></li>
     </ul>
 </body>
 </html>
