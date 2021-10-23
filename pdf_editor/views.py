@@ -33,12 +33,14 @@ class Merge(FormView):
 
 class Split(View):
     def get(self, request):
-        form = get_pdf()
+        form = get_pdf_multiple()
         return render(request, 'split.html')
 
     def post(self, request):
-        form = get_pdf()
-        return render(request, 'split.html')
+        form = get_pdf_multiple(request.POST, request.FILES)
+        if form.is_valid():
+            form.save()
+        return render(request, 'split.html', {'form': form})
 
 
 class Rotate(View):
@@ -49,26 +51,29 @@ class Rotate(View):
     def post(self, request):
         form = get_pdf_multiple(request.POST, request.FILES)
         if form.is_valid():
-
             form.save()
         return render(request, 'rotate.html', {'form': form})
 
 
 class Delete(View):
     def get(self, request):
-        form = get_pdf()
+        form = get_pdf_multiple()
         return render(request, 'delete.html')
 
     def post(self, request):
-        form = get_pdf()
-        return render(request, 'delete.html')
+        form = get_pdf_multiple(request.POST, request.FILES)
+        if form.is_valid():
+            form.save()
+        return render(request, 'delete.html', {'form': form})
 
 
 class Convert(View):
     def get(self, request):
-        form = get_pdf()
+        form = get_pdf_multiple()
         return render(request, 'convert.html')
 
     def post(self, request):
-        form = get_pdf()
-        return render(request, 'convert.html')
+        form = get_pdf_multiple(request.POST, request.FILES)
+        if form.is_valid():
+            form.save()
+        return render(request, 'convert.html', {'form': form})
