@@ -25,3 +25,7 @@ class get_pdf_single(forms.ModelForm):
 
 class merge_form(forms.Form):
     order = forms.IntegerField()
+
+
+class rotation(forms.Form):
+    angle = forms.IntegerField()

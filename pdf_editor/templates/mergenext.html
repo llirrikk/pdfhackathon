@@ -8,7 +8,7 @@
 <form method="post">
     {% csrf_token %}
     {% for i in num_of_pdfs %}
-    {{ form.order }}
+        {{ form.order }}
     {% endfor %}
     <input type="submit" value="Объединить"/>
 </form>

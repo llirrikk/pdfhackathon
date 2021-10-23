@@ -16,6 +16,7 @@ import os
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
+
 SECRET_KEY = 'django-insecure-&+d3%9m2oy4v8n0!$wjm8+1(lcv1x*c@hx8=idr%rtgv6j_v5h'
 
 DEBUG = True
@@ -103,6 +104,10 @@ _PATH = os.path.abspath(os.path.dirname(__file__))
 
 MEDIA_ROOT = os.path.join(_PATH, 'media')
 MEDIA_URL = '/uploaded/'
+
+MEDIA_URL_RESULTS = 'pdfhackathon/media/results'
+USER_RESULTS = 'uploaded/results'
+
 
 STATIC_ROOT = os.path.join(_PATH, 'files', 'static')
 STATIC_URL = '/static/'
