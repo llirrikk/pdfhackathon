@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+    <form method="post">
+        {% csrf_token %}
+        {% for n in num_of_pages %}
+        {{ form.to_delete }}
+        {% endfor %}
+        <button type="submit">Get new</button>
+    </form>
+</body>
+</html>

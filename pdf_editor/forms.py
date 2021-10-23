@@ -29,3 +29,7 @@ class merge_form(forms.Form):
 
 class rotation(forms.Form):
     angle = forms.IntegerField()
+
+
+class delete_form(forms.Form):
+    to_delete = forms.NullBooleanField(required=False)
