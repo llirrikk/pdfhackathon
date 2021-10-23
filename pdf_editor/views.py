@@ -13,41 +13,22 @@ def main(request):
 
 
 class Merge(FormView):
-    # def get(self, request):
-    #     if PDFile.objects.all().count == 0:
-    #         form = get_pdf_multiple()
-    #     else:
-    #         num_of_files = PDFile.objects.all().count
-    #         form = merge_form(num_of_files)
-    #
-    #     return render(request, 'merge.html')
     form_class = get_pdf_multiple
     template_name = 'merge.html'
+    success_url = '#'
 
     def post(self, request, *args, **kwargs):
-        if PDFile.objects.all().count == 0:
-            form_class = self.get_form_class()
-            form = self.get_form(form_class)
-            files = request.FILES.getlist('file')
-            if form.is_valid():
-                for f in files:
-                    new_file = PDFile()
-                    new_file.file = File(f)
-                    new_file.save()
+        form_class = self.get_form_class()
+        form = self.get_form(form_class)
+        files = request.FILES.getlist('file')
+        if form.is_valid():
+            for f in files:
+                file_instance = PDFile(file=f)
+                file_instance.save()
+
+            return self.form_valid(form)
         else:
-            num_of_files = PDFile.objects.all().count
-            form = merge_form(num_of_files)
-            # if form.is_valid():
-            #     for f in files:
-            #         ...  # Do something with each file.
-            #     return self.form_valid(form)
-            # else:
-            #     return self.form_invalid(form)
-        data = {
-            'num_of_files': num_of_files,
-            'form': form,
-        }
-        return render(request, 'merge.html', data)
+            return self.form_invalid(form)
 
 
 class Split(View):
