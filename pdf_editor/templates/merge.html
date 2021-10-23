@@ -5,10 +5,10 @@
     <title>Merge</title>
 </head>
 <body>
-    <form method="post" enctype="multipart/form-data">
+    <form method="post" enctype="multipart/form-data" id="form">
         {% csrf_token %}
         {{ form }}
-        <input type="submit" value="Объединить / Загрузить"/>
+        <input type="submit" value="Объединить / Загрузить" onchange="this.form.submit()"/>
     </form>
 </body>
 </html>

@@ -19,7 +19,9 @@ class get_pdf_single(forms.ModelForm):
         model = PDFile
         fields = ['file']
         widgets = {
-            'file': forms.ClearableFileInput()
+            'file': forms.ClearableFileInput(
+                attrs={'id': 'btn_select_file'}
+            )
         }
 
 

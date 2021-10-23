@@ -8,7 +8,7 @@ from .forms import get_pdf_multiple, merge_form, get_pdf_single, rotation, delet
 from django.views.generic.edit import FormView
 from django.core.files import File
 from django.core.files.storage import default_storage
-from .editings import rotate, toZIP
+from .editings import rotate, toZIP, delete
 from django.conf import settings
 import random, string
 from pdf2image import convert_from_path
@@ -182,9 +182,19 @@ class DeleteNext(View):
         form = delete_form(request.POST)
         to_delete = request.POST.getlist('to_delete')
         if form.is_valid():
-            for i in to_delete:
-                print(i, " <<<")
-        return render(request, 'deletenext.html', {'form': form})
+            c = 0
+            pages_to_delete = []
+            for b in to_delete:
+                if b == "true":
+                    pages_to_delete.append(c)
+                c += 1
+
+            pdf = PDFile.objects.all().last()
+            out_path = f"{settings.MEDIA_URL_RESULTS}/deleted_{create_random_str(10)}.pdf"
+
+            print(pages_to_delete)
+            delete.PDFdelete(pdf.file.path, pages_to_delete, out_path)
+            return redirect(f"../../uploaded/results/{os.path.basename(out_path)}")
 
 
 class Convert(View):

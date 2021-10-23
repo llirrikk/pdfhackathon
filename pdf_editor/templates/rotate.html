@@ -3,12 +3,34 @@
 <head>
     <meta charset="UTF-8">
     <title>Title</title>
+    <link rel="stylesheet" type="text/css" href="../static/css/upload_page.css">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,200;0,300;0,400;0,600;1,300&display=swap" rel="stylesheet">
 </head>
 <body>
-    <form method="post" enctype="multipart/form-data">
-        {% csrf_token %}
-        {{ form }}
-        <button type="submit">Upload</button>
-    </form>
+    <script type="text/javascript">
+        document.addEventListener("DOMContentLoaded", () => {
+            document.getElementById("btn_select_file").onchange = function() {
+                document.getElementById("form").submit();
+            };
+
+            label_in_form = document.getElementsByTagName('label')[0];
+            label_in_form.innerText = "Выбрать PDF файл";
+        });
+    </script>
+    <div class="parent">
+
+
+        <h1 class="func-name">Повернуть PDF</h1>
+        <h3 class="func-description">Вращайте ваш документ, как только хотите</h3>
+
+        <form method="post" enctype="multipart/form-data" id="form">
+            {% csrf_token %}
+            {{ form }}
+            <button type="submit">Upload</button>
+        </form>
+    </div>
 </body>
 </html>

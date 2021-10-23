@@ -1,0 +1,60 @@
+* {
+    padding: 0;
+    margin: 0;
+}
+
+html, body {
+    height: 100%;
+    font-family: 'Montserrat', sans-serif;
+}
+
+.parent {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    background-color: #484646;
+    flex-direction: column;
+}
+
+.parent button {
+    display: none;
+}
+
+
+/*Кнопка выбора файла*/
+.parent label {
+    border: 1px solid #ccc;
+    display: inline-block;
+    padding: 6px 12px;
+    cursor: pointer;
+    border: none;
+    background-color: #CBC6C5;
+    font-weight: 600;
+    font-size: 28px;
+    padding: 24px 56px;
+    transition: all .1s linear;
+    border-radius: 8px;
+}
+
+.parent label:hover {
+    background-color: #FFFFFF;
+}
+
+#btn_select_file {
+    display: none;
+}
+
+.func-name {
+    position: relative;
+    bottom: 145px;
+    font-size: 60px;
+    color: #FFFFFF;
+}
+
+.func-description {
+    position: relative;
+    bottom: 135px;
+    font-size: 20px;
+    color: burlywood;
+}
