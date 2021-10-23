@@ -15,7 +15,7 @@ def main(request):
 class Merge(FormView):
     form_class = get_pdf_multiple
     template_name = 'merge.html'
-    success_url = '#'
+    success_url = '/merge/next'
 
     def post(self, request, *args, **kwargs):
         form_class = self.get_form_class()
@@ -29,6 +29,30 @@ class Merge(FormView):
             return self.form_valid(form)
         else:
             return self.form_invalid(form)
+
+
+class MergeNext(View):
+    def get(self, request):
+        form = merge_form()
+        num_of_pdfs = PDFile.objects.all()
+        data = {
+            'form': form,
+            'num_of_pdfs': num_of_pdfs
+        }
+        return render(request, 'mergenext.html', data)
+
+    def post(self, request):
+        num_of_pdfs = PDFile.objects.all()
+        form = merge_form(request.POST)
+        nums = request.POST.getlist('order')
+        if form.is_valid():
+            for n in nums:
+                print(n)
+        data = {
+            'form': form,
+            'num_of_pdfs': num_of_pdfs
+        }
+        return render(request, 'mergenext.html', data)
 
 
 class Split(View):

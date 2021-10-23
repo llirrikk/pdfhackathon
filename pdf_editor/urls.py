@@ -6,6 +6,7 @@ from . import views
 urlpatterns = [
     path('', views.main, name='main'),
     path('merge/', views.Merge.as_view(), name='merge'),
+    path('merge/next/', views.MergeNext.as_view(), name='mergenext'),
     path('split/', views.Split.as_view(), name='split'),
     path('rotate/', views.Rotate.as_view(), name='rotate'),
     path('delete/', views.Delete.as_view(), name='delete'),
