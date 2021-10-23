@@ -15,8 +15,4 @@ class get_pdf_multiple(forms.ModelForm):
 
 
 class merge_form(forms.Form):
-    def order(self, pdf_number):
-        for i in range(pdf_number):
-            n = f'n{i}'
-            exec(f'{n} = forms.IntegerField()')
-            self.fields[n].initial = i
+    order = forms.IntegerField()
