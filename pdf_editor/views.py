@@ -5,6 +5,7 @@ from django.utils import timezone
 from .forms import get_pdf_multiple, merge_form
 from django.views.generic.edit import FormView
 from django.core.files import File
+from django.core.files.storage import default_storage
 
 
 def main(request):
@@ -61,12 +62,15 @@ class Split(View):
 
 class Rotate(View):
     def get(self, request):
-        form = get_pdf()
+        form = get_pdf_multiple()
         return render(request, 'rotate.html')
 
     def post(self, request):
-        form = get_pdf()
-        return render(request, 'rotate.html')
+        form = get_pdf_multiple(request.POST, request.FILES)
+        if form.is_valid():
+
+            form.save()
+        return render(request, 'rotate.html', {'form': form})
 
 
 class Delete(View):
