@@ -14,5 +14,14 @@ class get_pdf_multiple(forms.ModelForm):
         }
 
 
+class get_pdf_single(forms.ModelForm):
+    class Meta:
+        model = PDFile
+        fields = ['file']
+        widgets = {
+            'file': forms.ClearableFileInput()
+        }
+
+
 class merge_form(forms.Form):
     order = forms.IntegerField()
