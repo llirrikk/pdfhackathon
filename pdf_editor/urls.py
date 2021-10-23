@@ -10,6 +10,7 @@ urlpatterns = [
     path('split/', views.Split.as_view(), name='split'),
     path('rotate/', views.Rotate.as_view(), name='rotate'),
     path('delete/', views.Delete.as_view(), name='delete'),
+    path('delete/next/', views.DeleteNext.as_view(), name='delete'),
     path('convert_to_zip/', views.Convert.as_view(), name='convert'),
 ]
 

@@ -25,3 +25,7 @@ class get_pdf_single(forms.ModelForm):
 
 class merge_form(forms.Form):
     order = forms.IntegerField()
+
+
+class delete_form(forms.Form):
+    to_delete = forms.NullBooleanField(required=False)
