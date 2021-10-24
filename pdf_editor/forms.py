@@ -35,3 +35,8 @@ class rotation(forms.Form):
 
 class delete_form(forms.Form):
     to_delete = forms.NullBooleanField(required=False)
+
+
+class range_of_list(forms.Form):
+    first = forms.IntegerField()
+    last = forms.IntegerField()
