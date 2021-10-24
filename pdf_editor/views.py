@@ -51,7 +51,7 @@ class Merge(FormView):
     form_class = get_pdf_multiple
     template_name = 'merge.html'
     success_url = '/merge/next'
-
+    PDFile.objects.all().delete()
     def post(self, request, *args, **kwargs):
         form_class = self.get_form_class()
         form = self.get_form(form_class)
@@ -61,16 +61,7 @@ class Merge(FormView):
             for f in files:
                 file_instance = PDFile(file=f, number=i)
                 file_instance.save()
-
                 pdf = PDFile.objects.all().last()
-
-                pages = convert_from_path(pdf)
-                c = 0
-                for page in pages:
-                    _name = f'../media/images/{pdf}_{c}.jpg'
-                    page.save(_name, 'JPEG')
-                    c += 1
-
                 i += 1
 
             return self.form_valid(form)
@@ -80,7 +71,7 @@ class Merge(FormView):
 
 class MergeNext(View):
     def get(self, request):
-        form = merge_form()
+        form = merge_form(initial={'order': 1})
         num_of_pdfs = PDFile.objects.all()
         data = {
             'form': form,
@@ -90,21 +81,28 @@ class MergeNext(View):
 
     def post(self, request):
         files = PDFile.objects.all()
-        num_of_pdfs = PDFile.objects.all()
+        num_of_pdfs = files
         form = merge_form(request.POST)
         nums = request.POST.getlist('order')  # последовательность
+        merge_list = []
+        files_list = files.order_by('id')
+        i = 0
         if form.is_valid():
             for n in nums:
-                print(n)
+                merge_list.append([files_list[i].file.path, int(n)])
+                i += 1
+            print(merge_list)
+
         data = {
             'form': form,
             'num_of_pdfs': num_of_pdfs,
             'files': files,
         }
-        return render(request, 'mergenext.html', data)
+        return redirect('/')
 
 
 class Split(View):
+    PDFile.objects.all().delete()
     def get(self, request):
         form = get_pdf_single()
         return render(request, 'split.html', {'form': form})
@@ -150,6 +148,7 @@ class SplitNext(View):
 
 
 class Rotate(View):
+    PDFile.objects.all().delete()
     def get(self, request):
         form = get_pdf_single()
 
@@ -180,6 +179,7 @@ class RotateNext(View):
 
 
 class Delete(View):
+    PDFile.objects.all().delete()
     def get(self, request):
         form = get_pdf_single()
         return render(request, 'delete.html', {'form': form})
@@ -231,6 +231,7 @@ class DeleteNext(View):
 
 
 class Convert(View):
+    PDFile.objects.all().delete()
     def get(self, request):
         form = get_pdf_single()
         return render(request, 'convert.html', {'form': form})
