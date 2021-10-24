@@ -1,4 +1,6 @@
 from django import forms
+from django.core.validators import MinValueValidator, MaxValueValidator
+
 from . import views
 from . models import PDFile
 from .views import *
@@ -40,3 +42,8 @@ class delete_form(forms.Form):
 class range_of_list(forms.Form):
     first = forms.IntegerField()
     last = forms.IntegerField()
+
+
+class convert_setup(forms.Form):
+    name = forms.CharField()
+    compresslevel = forms.IntegerField(validators=[MinValueValidator(1), MaxValueValidator(10)])  # -1 потом

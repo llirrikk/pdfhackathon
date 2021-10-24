@@ -4,7 +4,7 @@ from django.shortcuts import render, redirect
 from django.views.generic import View
 from .models import PDFile, Images
 from django.utils import timezone
-from .forms import get_pdf_multiple, merge_form, get_pdf_single, rotation, delete_form, range_of_list
+from .forms import get_pdf_multiple, merge_form, get_pdf_single, rotation, delete_form, range_of_list, convert_setup
 from django.views.generic.edit import FormView
 from django.core.files import File
 from django.core.files.storage import default_storage
@@ -26,8 +26,11 @@ def get_file_name_without_extension(full_name):
 
 
 def get_file_name_with_extension(full_name):
-    print(os.path.basename(full_name))
     return os.path.basename(full_name)
+
+
+def get_only_file_name_without_extension(full_name):
+    return get_file_name_without_extension(get_file_name_with_extension(full_name))
 
 
 def save_thumbnails(pdfs):
@@ -44,6 +47,30 @@ def save_thumbnails(pdfs):
             new_image.save()
             pdf.images.add(new_image)
             pdf.save()
+
+
+def get_images_and_orientations(pdf):
+    images = []
+    orientation = []
+    for image in pdf.images.all():
+        images.append(get_file_name_with_extension(image.image.path))
+        orientation.append(get_orientation(image.image.path))
+    return images, orientation
+
+
+def get_first_image_and_orientation(pdf):
+    images = []
+    orientation = []
+    for image in pdf.images.all():
+        images.append(get_file_name_with_extension(image.image.path))
+        orientation.append(get_orientation(image.image.path))
+        break  # как тут по-другому сделать?
+    return images[0], orientation[0]
+
+
+def get_page_count(pdf) -> int:
+    infile = PyPDF2.PdfFileReader(pdf.file.path)
+    return infile.getNumPages()
 
 
 def main(request):
@@ -86,19 +113,16 @@ class MergeSetup(View):
         form = merge_form(initial={'order': 1})
         num_of_pdfs = PDFile.objects.all()
 
-        images = []
+        first_images = []
         orientation = []
         for pdf in num_of_pdfs:
-            for image in pdf.images.all():
-                images.append(get_file_name_with_extension(image.image.path))
-                orientation.append(get_orientation(image.image.path))
-                break  # говнокод для только одной картинки
+            _images, _orientation = get_first_image_and_orientation(pdf)
+            first_images.append(_images)
+            orientation.append(_orientation)
 
-        num_and_image_and_orientation = zip(num_of_pdfs, images, orientation)
+        num_and_image_and_orientation = zip(num_of_pdfs, first_images, orientation)
         data = {
             'form': form,
-            # 'num_of_pdfs': num_of_pdfs,
-            # 'images': images,
             'num_and_image_and_orientation': num_and_image_and_orientation,
         }
         return render(request, 'merge_setup.html', data)
@@ -152,11 +176,7 @@ class SplitSetup(View):
         num_of_pages = self.get_pages_num(pdf)
         form = range_of_list(initial={'first': 1, 'last': num_of_pages})
 
-        images = []
-        orientation = []
-        for image in pdf.images.all():
-            images.append(get_file_name_with_extension(image.image.path))
-            orientation.append(get_orientation(image.image.path))
+        images, orientation = get_images_and_orientations(pdf)
 
         images_and_orientation = zip(images, orientation)
 
@@ -242,11 +262,7 @@ class DeleteSetup(View):
         for i in range(num_of_pages):
             list.append(i)
 
-        images = []
-        orientation = []
-        for image in pdf.images.all():
-            images.append(get_file_name_with_extension(image.image.path))
-            orientation.append(get_orientation(image.image.path))
+        images, orientation = get_images_and_orientations(pdf)
 
         num_and_images_and_orientation = zip(list, images, orientation)
         data = {
@@ -285,18 +301,36 @@ class Convert(View):
             form.save()
         pdf = PDFile.objects.all().last()
         save_thumbnails([pdf])
-        return redirect('ready/')
+        return redirect('setup/')
 
 
-class ConvertReady(View):
+class ConvertSetup(View):
     def get(self, request):
         pdf = PDFile.objects.all().last()
-        out_path = f"{settings.MEDIA_URL_RESULTS}/zip_{create_random_str(10)}.zip"
-        toZIP.PDFtoZIP(pdf.file.path, "page_{}", out_path)
+        image, orientation = get_first_image_and_orientation(pdf)
 
+        form = convert_setup(initial={'compresslevel': 5, 'name': f"{get_only_file_name_without_extension(pdf.file.path)}_jpgs.zip"})
         data = {
-            'result_url': f"../../uploaded/results/{os.path.basename(out_path)}",
-            'file_name': 'file_name',
-            'page_count': 'page_count',
+            'form': form,
+            'image': image,
+            'orientation': orientation,
+            'file_name': get_file_name_with_extension(pdf.file.path),
+            'page_count': get_page_count(pdf),
         }
-        return render(request, 'convert_ready.html', data)
+        return render(request, 'convert_setup.html', data)
+
+
+    def post(self, request):
+        form = convert_setup(request.POST)
+        if form.is_valid():
+            result_name = request.POST.get('name')
+            compresslevel = request.POST.get('compresslevel')
+
+            pdf = PDFile.objects.all().last()
+            out_path = f"{settings.MEDIA_URL_RESULTS}/{result_name}"
+            toZIP.PDFtoZIP(pdf.file.path, "page_{}", out_path, compresslevel)
+
+            data = {
+                'result_url': f"../../uploaded/results/{result_name}",
+            }
+            return render(request, 'convert_ready.html', data)

@@ -23,8 +23,8 @@ urlpatterns = [
     # path('delete/ready/', views.DeleteReady.as_view(), name='deleteready'),
     
     path('convert_to_zip/', views.Convert.as_view(), name='convert'),
-    path('convert_to_zip/setup/', views.Convert.as_view(), name='convertsetup'),  # имя zip файла, степень сжатия
-    path('convert_to_zip/ready/', views.ConvertReady.as_view(), name='convertready'),
+    path('convert_to_zip/setup/', views.ConvertSetup.as_view(), name='convertsetup'),  # имя zip файла, степень сжатия
+    # path('convert_to_zip/ready/', views.ConvertReady.as_view(), name='convertready'),
 
 ]
 

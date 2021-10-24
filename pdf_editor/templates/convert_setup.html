@@ -27,10 +27,16 @@
         <h1 class="func-name">Конвертировать PDF в JPG</h1>
         <h3 class="func-description">Получите каждую страницу PDF в ZIP архиве</h3>
 
+        {% if orientation == "L" %}
+            <img src="/uploaded/media/{{ image }}" id='thumbnail_0' width="180" height="101">
+        {% else %}
+            <img src="/uploaded/media/{{ image }}" id='thumbnail_0' width="101" height="180">
+        {% endif %}
+
         <form method="post" enctype="multipart/form-data" id="form">
             {% csrf_token %}
             {{ form }}
-            <button type="submit">Upload</button>
+            <button type="submit">Ready</button>
         </form>
         <!-- <div class="drop-upload" id='drop-zone' ondrop="dropHandler(event);" ondragover="dragOverHandler(event);">
             drop files here
