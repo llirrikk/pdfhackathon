@@ -2,56 +2,61 @@ import os
 
 from django.shortcuts import render, redirect
 from django.views.generic import View
-from .models import PDFile
+from .models import PDFile, Images
 from django.utils import timezone
 from .forms import get_pdf_multiple, merge_form, get_pdf_single, rotation, delete_form, range_of_list
 from django.views.generic.edit import FormView
 from django.core.files import File
 from django.core.files.storage import default_storage
-from .editings import rotate, toZIP, delete, split
+from .editings import rotate, toZIP, delete, split, merge
 from django.conf import settings
 import random, string
 from pdf2image import convert_from_path
 import os
-from PIL import Image
 import PyPDF2
-
+from PIL import Image
 
 
 def create_random_str(size: int):
     return ''.join(random.choice(string.ascii_lowercase + string.digits) for _ in range(size))
 
 
+def get_file_name_without_extension(full_name):
+    return os.path.splitext(full_name)[0]
+
+
+def get_file_name_with_extension(full_name):
+    print(os.path.basename(full_name))
+    return os.path.basename(full_name)
+
+
+def save_thumbnails(pdfs):
+    for pdf in pdfs:
+        pages = convert_from_path(pdf.file.path)
+
+        pages = convert_from_path(pdf.file.path)
+        c = 0
+        pdf_name = get_file_name_without_extension(pdf.file.path)
+        for page in pages:
+            _name = f"{pdf_name}_{c}.jpg"
+            page.save(_name, 'JPEG')
+            c += 1
+            new_image = Images()
+            new_image.image = _name
+            new_image.save()
+            pdf.images.add(new_image)
+            pdf.save()
+
+
 def main(request):
+    PDFile.objects.all().delete()
     return render(request, 'main.html')
 
 
 class Merge(FormView):
-    def PDFtoImages(pdf, output_nameN):
-        def get_file_name_without_extension(full_name):
-            return os.path.splitext(output_nameN)[0]
-
-        pages = convert_from_path(pdf)
-        pdf_name_without_extension = get_file_name_without_extension(output_nameN)
-
-        output_names = []
-        images = []
-        c = 0
-        for page in pages:
-            _name = f'../media/images/{pdf_name_without_extension.format(c)}.jpg'
-            output_names.append(_name)
-            page.save(_name, 'JPEG')
-
-            _i = Image.open(_name)
-            images.append(_i)
-            c += 1
-        return images
-
-
     form_class = get_pdf_multiple
     template_name = 'merge.html'
     success_url = '/merge/next'
-    PDFile.objects.all().delete()
     def post(self, request, *args, **kwargs):
         form_class = self.get_form_class()
         form = self.get_form(form_class)
@@ -62,6 +67,7 @@ class Merge(FormView):
                 file_instance = PDFile(file=f, number=i)
                 file_instance.save()
                 pdf = PDFile.objects.all().last()
+                save_thumbnails([pdf])
                 i += 1
 
             return self.form_valid(form)
@@ -69,13 +75,33 @@ class Merge(FormView):
             return self.form_invalid(form)
 
 
+def get_orientation(filepath):
+    with Image.open(filepath) as img:
+        width, height = img.size
+    if width > height:
+        return 'L'
+    return 'P'
+
+
 class MergeNext(View):
     def get(self, request):
         form = merge_form(initial={'order': 1})
         num_of_pdfs = PDFile.objects.all()
+
+        images = []
+        orientation = []
+        for pdf in num_of_pdfs:
+            for image in pdf.images.all():
+                images.append(get_file_name_with_extension(image.image.path))
+                orientation.append(get_orientation(image.image.path))
+                break  # говнокод для только одной картинки
+
+        num_and_image_and_orientation = zip(num_of_pdfs, images, orientation)
         data = {
             'form': form,
-            'num_of_pdfs': num_of_pdfs,
+            # 'num_of_pdfs': num_of_pdfs,
+            # 'images': images,
+            'num_and_image_and_orientation': num_and_image_and_orientation,
         }
         return render(request, 'mergenext.html', data)
 
@@ -91,18 +117,18 @@ class MergeNext(View):
             for n in nums:
                 merge_list.append([files_list[i].file.path, int(n)])
                 i += 1
-            print(merge_list)
+            out_path = f"{settings.MEDIA_URL_RESULTS}/merged_{create_random_str(10)}.pdf"
+            merge.PDFmerge(merge_list, out_path)
 
-        data = {
-            'form': form,
-            'num_of_pdfs': num_of_pdfs,
-            'files': files,
-        }
-        return redirect('/')
+        # data = {
+        #     'form': form,
+        #     'num_of_pdfs': num_of_pdfs,
+        #     'files': files,
+        # }
+        return redirect(f"../../uploaded/results/{os.path.basename(out_path)}")
 
 
 class Split(View):
-    PDFile.objects.all().delete()
     def get(self, request):
         form = get_pdf_single()
         return render(request, 'split.html', {'form': form})
@@ -111,6 +137,8 @@ class Split(View):
         form = get_pdf_single(request.POST, request.FILES)
         if form.is_valid():
             form.save()
+        pdf = PDFile.objects.all().last()
+        save_thumbnails([pdf])
         return redirect('next/')
 
 
@@ -146,9 +174,7 @@ class SplitNext(View):
         return redirect(f"../../uploaded/results/{os.path.basename(out_path)}")
 
 
-
 class Rotate(View):
-    PDFile.objects.all().delete()
     def get(self, request):
         form = get_pdf_single()
 
@@ -158,6 +184,8 @@ class Rotate(View):
         form = get_pdf_single(request.POST, request.FILES)
         if form.is_valid():
             form.save()
+        pdf = PDFile.objects.all().last()
+        save_thumbnails([pdf])
         return redirect('next/')
 
 
@@ -179,7 +207,6 @@ class RotateNext(View):
 
 
 class Delete(View):
-    PDFile.objects.all().delete()
     def get(self, request):
         form = get_pdf_single()
         return render(request, 'delete.html', {'form': form})
@@ -188,6 +215,8 @@ class Delete(View):
         form = get_pdf_single(request.POST, request.FILES)
         if form.is_valid():
             form.save()
+        pdf = PDFile.objects.all().last()
+        save_thumbnails([pdf])
         return redirect('next/')
 
 
@@ -231,7 +260,6 @@ class DeleteNext(View):
 
 
 class Convert(View):
-    PDFile.objects.all().delete()
     def get(self, request):
         form = get_pdf_single()
         return render(request, 'convert.html', {'form': form})
@@ -240,6 +268,8 @@ class Convert(View):
         form = get_pdf_single(request.POST, request.FILES)
         if form.is_valid():
             form.save()
+        pdf = PDFile.objects.all().last()
+        save_thumbnails([pdf])
         return redirect('next/')
 
 
