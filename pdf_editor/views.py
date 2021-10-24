@@ -8,7 +8,7 @@ from .forms import get_pdf_multiple, merge_form, get_pdf_single, rotation, delet
 from django.views.generic.edit import FormView
 from django.core.files import File
 from django.core.files.storage import default_storage
-from .editings import rotate, toZIP, delete
+from .editings import rotate, toZIP, delete, split
 from django.conf import settings
 import random, string
 from pdf2image import convert_from_path
@@ -129,6 +129,7 @@ class SplitNext(View):
         form = range_of_list(initial={'first': 1, 'last': num_of_pages})
         data = {
             'form': form,
+            'num_of_pages': num_of_pages,
         }
         return render(request, 'splitnext.html', data)
 
@@ -139,9 +140,12 @@ class SplitNext(View):
         split_ranges = []
         if form.is_valid():
             for i in range(len(first_list)):
-                split_ranges.append([first_list[i], last_list[i]])
-        print(split_ranges)
-        return redirect('/')
+                split_ranges.append([int(first_list[i]) - 1, int(last_list[i]) - 1])
+
+        pdf = PDFile.objects.all().last()
+        out_path = f"{settings.MEDIA_URL_RESULTS}/splited_{create_random_str(10)}.zip"
+        split.PDFsplit(pdf.file.path, split_ranges, "pdf_{}.pdf", out_path)
+        return redirect(f"../../uploaded/results/{os.path.basename(out_path)}")
 
 
 

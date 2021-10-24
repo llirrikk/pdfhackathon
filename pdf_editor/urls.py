@@ -5,9 +5,10 @@ from . import views
 
 urlpatterns = [
     path('', views.main, name='main'),
-    # path('merge/', views.Merge.as_view(), name='merge'),
-    # path('merge/next/', views.MergeNext.as_view(), name='mergenext'),
-    #
+
+    path('merge/', views.Merge.as_view(), name='merge'),
+    path('merge/next/', views.MergeNext.as_view(), name='mergenext'),
+
     path('split/', views.Split.as_view(), name='split'),
     path('split/next/', views.SplitNext.as_view(), name='splitnext'),
 

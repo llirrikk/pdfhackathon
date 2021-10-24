@@ -2,16 +2,29 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Title</title>
+    <title>Разделить PDF</title>
 </head>
 <body>
+    <script type="text/javascript">
+        function create_new_diapason(){
+            var elem = document.getElementById('diapason');
+            var clone = elem.cloneNode(true);
+            clone.id = 'elem2';
+            elem.after(clone);
+        }
+    </script>
     <form method="post" enctype="multipart/form-data">
         {% csrf_token %}
-        {{ form }}
-        <input type="number" name="first" value="1" required="" id="id_first">
-        <input type="number" name="last" value="4" required="" id="id_last">
-        <!-- сюда создавать через js ещё inputы, как эта -->
+        <div id="diapason">
+            {{ form }}
+        </div>
+        <!-- <input type="number" name="first" value="0" required="" id="id_first">
+        <input type="number" name="last" value="0" required="" id="id_last"> -->
+
+
+
         <button type="submit">Upload</button>
     </form>
+    <button onclick="create_new_diapason();">Добавить диапазон</button>
 </body>
 </html>

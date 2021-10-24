@@ -45,6 +45,10 @@ html, body {
     display: none;
 }
 
+#id_file {
+    display: none;
+}
+
 .func-name {
     position: relative;
     bottom: 145px;
