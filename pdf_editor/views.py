@@ -219,7 +219,7 @@ class Rotate(View):
 class RotateSetup(View):
     def get(self, request):
         form = rotation()
-        return render(request, 'rotate.html', {'form': form})
+        return render(request, 'rotate_setup.html', {'form': form})
 
     def post(self, request):
         form = rotation(request.POST)
@@ -324,7 +324,7 @@ class ConvertSetup(View):
         form = convert_setup(request.POST)
         if form.is_valid():
             result_name = request.POST.get('name')
-            compresslevel = request.POST.get('compresslevel')
+            compresslevel = int(request.POST.get('compresslevel')) - 1
 
             pdf = PDFile.objects.all().last()
             out_path = f"{settings.MEDIA_URL_RESULTS}/{result_name}"

@@ -3,21 +3,26 @@
 <head>
     <meta charset="UTF-8">
     <title>Merge</title>
+    <link rel="stylesheet" type="text/css" href="../../static/css/rotate.css">
 </head>
 <body>
 {% load static %}
-<form method="post">
+<form method="post" class=form>
+    <div class="empty"></div>
     {% csrf_token %}
     {% for number, image, orientation in num_and_image_and_orientation %}
-        {% if orientation == "L" %}
-            <img src="/uploaded/media/{{ image }}" id='thumbnail_{{ forloop.counter }}' width="180" height="101">
-        {% else %}
-            <img src="/uploaded/media/{{ image }}" id='thumbnail_{{ forloop.counter }}' width="101" height="180">
-        {% endif %}
-        <input type="number" name="order" value="{{ forloop.counter }}" required="" id="id_order">
+        <div class="container">
+            {% if orientation == "L" %}
+                <img src="/uploaded/media/{{ image }}" id='thumbnail_{{ forloop.counter }}' width="180" height="101">
+            {% else %}
+                <img src="/uploaded/media/{{ image }}" id='thumbnail_{{ forloop.counter }}' width="101" height="180">
+            {% endif %}
+            <!-- <div class="break"></div> -->
+            <input type="number" name="order" value="{{ forloop.counter }}" required="" id="id_order_{{ forloop.counter }}" class=inputs>
+        </div>
     {% endfor %}
 
-    <input type="submit" value="Объединить"/>
+    <button type="submit" >Объединить</button>
 </form>
 </body>
 </html>

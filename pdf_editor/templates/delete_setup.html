@@ -2,22 +2,29 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Title</title>
+    <title>Удалить стрианицы из PDF</title>
+    <link rel="stylesheet" type="text/css" href="../../static/css/upload_page.css">
 </head>
 <body>
-    <form method="post">
-        {% csrf_token %}
-        {% for n, image, orientation in num_and_images_and_orientation %}
-            {{ form.to_delete }}
+    <div class="parent-2">
+        <div class="child"></div>
+        <form method="post">
+            {% csrf_token %}
+            {% for n, image, orientation in num_and_images_and_orientation %}
+            <div class="container">
+                {{ form.to_delete }}
 
-            {% if orientation == "L" %}
-                <img src="/uploaded/media/{{ image }}" id='thumbnail_{{ forloop.counter }}' width="180" height="101">
-            {% else %}
-                <img src="/uploaded/media/{{ image }}" id='thumbnail_{{ forloop.counter }}' width="101" height="180">
-            {% endif %}
-
-        {% endfor %}
-        <button type="submit">Get new</button>
-    </form>
+                {% if orientation == "L" %}
+                    <img src="/uploaded/media/{{ image }}" id='thumbnail_{{ forloop.counter }}' width="180" height="101">
+                {% else %}
+                    <img src="/uploaded/media/{{ image }}" id='thumbnail_{{ forloop.counter }}' width="101" height="180">
+                {% endif %}
+            </div>
+            {% endfor %}
+            <div class="container">
+                <button type="submit">Get new</button>
+            </div>
+        </form>
+    </div>
 </body>
 </html>
