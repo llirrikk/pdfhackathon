@@ -58,3 +58,9 @@ html, body {
     font-size: 20px;
     color: burlywood;
 }
+
+.drop-upload{
+    height: 200px;
+    width: 200px;
+    border: 2px solid black;
+}
