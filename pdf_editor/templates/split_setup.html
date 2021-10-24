@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Разделить PDF</title>
+</head>
+<body>
+    <script type="text/javascript">
+        function create_new_diapason(){
+            var elem = document.getElementById('diapason');
+            var clone = elem.cloneNode(true);
+            clone.id = 'elem2';
+            elem.after(clone);
+        }
+    </script>
+    {% for image, orientation in images_and_orientation %}
+        {% if orientation == "L" %}
+            <img src="/uploaded/media/{{ image }}" id='thumbnail_{{ forloop.counter }}' width="180" height="101">
+        {% else %}
+            <img src="/uploaded/media/{{ image }}" id='thumbnail_{{ forloop.counter }}' width="101" height="180">
+        {% endif %}
+    {% endfor %}
+    <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        <div id="diapason">
+            {{ form }}
+        </div>
+        <!-- <input type="number" name="first" value="0" required="" id="id_first">
+        <input type="number" name="last" value="0" required="" id="id_last"> -->
+
+
+
+        <button type="submit">Upload</button>
+    </form>
+    <button onclick="create_new_diapason();">Добавить диапазон</button>
+</body>
+</html>

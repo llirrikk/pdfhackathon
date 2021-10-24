@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>PDF в JPG</title>
+    <link rel="stylesheet" type="text/css" href="../../static/css/upload_page.css">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,200;0,300;0,400;0,600;1,300&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="parent">
+        <h1 class="func-name">Конвертировать PDF в JPG</h1>
+        <h3 class="func-description">Получите каждую страницу PDF в ZIP архиве</h3>
+
+        <p class="result-url-text">Ссылка на скачивание: <a class="result-url" href="{{ result_url }}">{{ result_url }}</a></p>
+        <p class="file_name">Название: {{ file_name }}</p>
+        <p class="page_count">Количество страниц: {{ page_count }}</p>
+    </div>
+</body>
+</html>
