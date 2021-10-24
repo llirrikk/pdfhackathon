@@ -4,7 +4,7 @@ from django.shortcuts import render, redirect
 from django.views.generic import View
 from .models import PDFile
 from django.utils import timezone
-from .forms import get_pdf_multiple, merge_form, get_pdf_single, rotation, delete_form
+from .forms import get_pdf_multiple, merge_form, get_pdf_single, rotation, delete_form, range_of_list
 from django.views.generic.edit import FormView
 from django.core.files import File
 from django.core.files.storage import default_storage
@@ -113,7 +113,36 @@ class Split(View):
         form = get_pdf_single(request.POST, request.FILES)
         if form.is_valid():
             form.save()
-        return render(request, 'split.html', {'form': form})
+        return redirect('next/')
+
+
+class SplitNext(View):
+
+    def get_pages_num(self, path):
+        with open(path.file.path, 'rb') as file:
+            a = PyPDF2.PdfFileReader(file)
+            return a.getNumPages()
+
+    def get(self, request):
+        pdf = PDFile.objects.all().last()
+        num_of_pages = self.get_pages_num(pdf)
+        form = range_of_list(initial={'first': 1, 'last': num_of_pages})
+        data = {
+            'form': form,
+        }
+        return render(request, 'splitnext.html', data)
+
+    def post(self, request):
+        form = range_of_list(request.POST)
+        first_list = request.POST.getlist('first')
+        last_list = request.POST.getlist('last')
+        split_ranges = []
+        if form.is_valid():
+            for i in range(len(first_list)):
+                split_ranges.append([first_list[i], last_list[i]])
+        print(split_ranges)
+        return redirect('/')
+
 
 
 class Rotate(View):

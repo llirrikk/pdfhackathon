@@ -8,8 +8,8 @@ urlpatterns = [
     # path('merge/', views.Merge.as_view(), name='merge'),
     # path('merge/next/', views.MergeNext.as_view(), name='mergenext'),
     #
-    # path('split/', views.Split.as_view(), name='split'),
-    # path('split/next/', views.SplitNext.as_view(), name='splitnext'),
+    path('split/', views.Split.as_view(), name='split'),
+    path('split/next/', views.SplitNext.as_view(), name='splitnext'),
 
     path('rotate/', views.Rotate.as_view(), name='rotate'),
     path('rotate/next/', views.RotateNext.as_view(), name='rotatenext'),
